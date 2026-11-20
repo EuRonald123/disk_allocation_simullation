@@ -7,15 +7,20 @@ void disk_reset_block(Block *block) {
     block->next_block = INVALID_BLOCK;
     block->index_count = 0;
 
-    for (int i = 0; i < DISK_SIZE; i++) {
+    for (int i = 0; i < MAX_DISK_SIZE; i++) {
         block->index_table[i] = INVALID_BLOCK;
     }
 }
 
-void disk_init(Disk *disk, AllocationMethod method) {
-    disk->allocation_method = method;
+void disk_init(Disk *disk, AllocationMethod method, int total_blocks) {
+    if (total_blocks <= 0 || total_blocks > MAX_DISK_SIZE) {
+        total_blocks = DEFAULT_DISK_SIZE;
+    }
 
-    for (int i = 0; i < DISK_SIZE; i++) {
+    disk->allocation_method = method;
+    disk->total_blocks = total_blocks;
+
+    for (int i = 0; i < MAX_DISK_SIZE; i++) {
         disk_reset_block(&disk->blocks[i]);
     }
 
@@ -48,7 +53,7 @@ int disk_find_free_file_slot(const Disk *disk) {
 int disk_count_free_blocks(const Disk *disk) {
     int count = 0;
 
-    for (int i = 0; i < DISK_SIZE; i++) {
+    for (int i = 0; i < disk->total_blocks; i++) {
         if (disk->blocks[i].type == BLOCK_FREE) {
             count++;
         }
