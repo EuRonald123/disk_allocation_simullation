@@ -5,7 +5,7 @@
 
 #define MAX_DISK_SIZE 64
 #define DEFAULT_DISK_SIZE 10
-#define MAX_FILES 10
+#define MAX_FILES 26
 #define INVALID_BLOCK -1
 
 // Enums de metodos de alocacao dos arquivos

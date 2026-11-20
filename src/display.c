@@ -66,7 +66,7 @@ void display_disk_map(const Disk *disk) {
 }
 
 void display_file_table(const Disk *disk) {
-    printf("Tabela de Diretorio (Arquivos Ativos):\n");
+    printf("Tabela de Diretorio:\n");
 
     int active_count = 0;
     for (int i = 0; i < MAX_FILES; i++) {
@@ -98,7 +98,7 @@ void display_file_table(const Disk *disk) {
             int idx_blk = entry->start_block;
             const Block *index_block = &disk->blocks[idx_blk];
 
-            printf("Indice: %02d (Ocupa %d no disco) | Dados: { ",
+            printf("Indice: %02d (ocupa %d no disco) | Dados: { ",
                    idx_blk, entry->size + 1);
 
             for (int j = 0; j < index_block->index_count; j++) {
