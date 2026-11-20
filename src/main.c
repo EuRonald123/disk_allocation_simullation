@@ -4,29 +4,34 @@
 #include "allocator.h"
 #include "display.h"
 
-/* Limpa o buffer de entrada do teclado */
-static void clear_input_buffer(void) {
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF) {}
+/* Le um inteiro usando fgets; retorna default_val se a entrada for vazia ou invalida */
+static int read_int(int default_val) {
+    char buf[64];
+    int val;
+    if (fgets(buf, sizeof(buf), stdin) != NULL && sscanf(buf, "%d", &val) == 1) {
+        return val;
+    }
+    return default_val;
+}
+
+/* Le um caractere usando fgets e converte para maiusculo */
+static char read_char(void) {
+    char buf[64];
+    char c = '\0';
+    if (fgets(buf, sizeof(buf), stdin) != NULL && sscanf(buf, " %c", &c) == 1) {
+        return (char)toupper((unsigned char)c);
+    }
+    return '\0';
 }
 
 /* Configura ou reconfigura o disco (tamanho e tecnica) */
 static void setup_disk(Disk *disk) {
-    int disk_size = DEFAULT_DISK_SIZE;
-    int choice = 1;
-
-    printf("\nQuantos blocos o disco deve ter? (1 a %d, padrao %d): ",
+    printf("\nQuantos blocos o disco deve ter? (1 a %d, Enter = %d): ",
            MAX_DISK_SIZE, DEFAULT_DISK_SIZE);
-    if (scanf("%d", &disk_size) != 1) {
-        disk_size = DEFAULT_DISK_SIZE;
-    }
-    clear_input_buffer();
+    int disk_size = read_int(DEFAULT_DISK_SIZE);
 
     printf("Escolha a tecnica (1-Contigua | 2-Encadeada | 3-Indexada): ");
-    if (scanf("%d", &choice) != 1) {
-        choice = 1;
-    }
-    clear_input_buffer();
+    int choice = read_int(1);
 
     AllocationMethod method = ALLOC_CONTIGUOUS;
     if (choice == 2) method = ALLOC_LINKED;
@@ -50,32 +55,21 @@ int main(void) {
         printf("  0 - Sair\n");
         printf("Opcao: ");
 
-        if (scanf("%d", &op) != 1) {
-            clear_input_buffer();
-            continue;
-        }
-        clear_input_buffer();
+        op = read_int(-1);
 
         if (op == 1) {
             display_disk_state(&disk, "ESTADO ATUAL");
 
         } else if (op == 2) {
-            char id;
-            int size;
-
             printf("Letra do arquivo (ex: A): ");
-            if (scanf(" %c", &id) != 1) {
-                clear_input_buffer();
+            char id = read_char();
+            if (id == '\0') {
+                printf(">> ERRO: ID invalido.\n");
                 continue;
             }
-            id = (char)toupper((unsigned char)id);
 
             printf("Tamanho em blocos: ");
-            if (scanf("%d", &size) != 1) {
-                clear_input_buffer();
-                continue;
-            }
-            clear_input_buffer();
+            int size = read_int(0);
 
             display_disk_state(&disk, "ANTES DE CRIAR");
             if (disk_allocate(&disk, id, size)) {
@@ -86,15 +80,12 @@ int main(void) {
             display_disk_state(&disk, "DEPOIS DE CRIAR");
 
         } else if (op == 3) {
-            char id;
-
             printf("Letra do arquivo para remover: ");
-            if (scanf(" %c", &id) != 1) {
-                clear_input_buffer();
+            char id = read_char();
+            if (id == '\0') {
+                printf(">> ERRO: ID invalido.\n");
                 continue;
             }
-            clear_input_buffer();
-            id = (char)toupper((unsigned char)id);
 
             display_disk_state(&disk, "ANTES DE REMOVER");
             if (disk_remove(&disk, id)) {

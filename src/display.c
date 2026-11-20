@@ -120,7 +120,7 @@ void display_disk_state(const Disk *disk, const char *title) {
     int used_blocks = disk->total_blocks - free_blocks;
     int max_contiguous = calculate_max_contiguous_free(disk);
 
-    printf("*****\n");
+    printf("\n*****\n");
     if (title != NULL) {
         printf(" %s\n", title);
         printf("--------------------------------------------------------------------\n");
@@ -135,5 +135,5 @@ void display_disk_state(const Disk *disk, const char *title) {
 
     display_disk_map(disk);
     display_file_table(disk);
-    printf("*****\n\n");
+    printf("*****\n");
 }
